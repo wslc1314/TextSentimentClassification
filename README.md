@@ -10,10 +10,11 @@ Using word2vec and GloVe to generate word vectors...
 ## TextCNN
 ### Reference
 [Convolutional Neural Networks for Sentence Classification](https://arxiv.org/abs/1408.5882)
+
 [A Sensitivity Analysis of (and Practitioners' Guide to) Convolutional Neural Networks for Sentence Classification](https://arxiv.org/abs/1510.03820)
 ### Model Architecture
 ![](https://github.com/wslc1314/TextSentimentClassification/blob/master/images/TextCNN.png "TextCNN")
-Total 4 ways:
+*Total 4 ways:*
 + CNN-rand
 + CNN-static
 + CNN-nonstatic
@@ -21,18 +22,21 @@ Total 4 ways:
 ## TextRNN
 ### Model Architecture
 ![](https://github.com/wslc1314/TextSentimentClassification/blob/master/images/TextRNN.JPG "TextRNN")
+
 Using bidirectional RNN, and then concatenating the last output of the forward process and the first output of the backward process...
 ## CRNN
 ### Reference
 [A C-LSTM Neural Network for Text Classification](https://arxiv.org/abs/1511.08630)
 ### Model Architecture
 ![](https://github.com/wslc1314/TextSentimentClassification/blob/master/images/CRNN.png "CRNN")
+
 Using CNN to extract sentences with higher-level phrase representations, and then learning long short-term dependency with bi-RNN...
 ## RCNN
 ### Reference
 [Recurrent Convolutional Neural Networks for Text Classification](https://aaai.org/ocs/index.php/AAAI/AAAI15/paper/view/9745)
 ### Model Architecture
 ![](https://github.com/wslc1314/TextSentimentClassification/blob/master/images/RCNN.png "RCNN")
+
 In addition to implementing the same structure as the paper, using bi-LSTM or bi-GRU and then concatenating their outputs...
 RNN for capturing contextual information and max pooling used for judging which words play key roles in the task...
 ## HAN
@@ -40,6 +44,7 @@ RNN for capturing contextual information and max pooling used for judging which 
 [Hierarchical Attention Networks for Document Classification](https://www.microsoft.com/en-us/research/publication/hierarchical-attention-networks-document-classification/)
 ### Model Architecture
 ![](https://github.com/wslc1314/TextSentimentClassification/blob/master/images/HAN.png "HAN")
+
 Transforming a sentence into a document consisting of sentences...
 # Ensembles
 ## Bagging
