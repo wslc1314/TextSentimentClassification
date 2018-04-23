@@ -13,7 +13,7 @@ Using word2vec and GloVe to generate word vectors...
 # Models
 ## Performance
 | Model | Epoch | Training Accuracy | Validation Accuracy | Parameters(word vectors excluded) |
-| - | :-: | :-: |  :-: | -: |
+| :-: | :-: | :-: |  :-: | :-: |
 | TextCNN+nonstatic | 130 | 0.8839 | 0.8142 | 281,202 |
 | TextRNN+nonstatic | 150 | 0.8383 | 0.8199 | 285,826 |
 | CRNN+nonstatic | 70 | 0.8600 | 0.8219 | 274,818 |
@@ -33,12 +33,12 @@ Using word2vec and GloVe to generate word vectors...
 + CNN-nonstatic
 + CNN-multichannel
 ### Performance
-Model | Epoch | Training Accuracy | Validation Accuracy | Parameters(word vectors excluded)
-- | :-: | :-: |  :-: | -:
-TextCNN+rand | 130 | 0.8761 | 0.8137 | 281,202
-TextCNN+static | 60 | 0.9015 | 0.8113 | 281,202
-TextCNN+nonstatic | 130 | 0.8839 | 0.8142 | 281,202
-TextCNN+multichannel | 60 | 0.9225 | 0.8141 | 561,202
+| Model | Epoch | Training Accuracy | Validation Accuracy | Parameters(word vectors excluded)|
+| :-: | :-: | :-: |  :-: | :-: |
+| TextCNN+rand | 130 | 0.8761 | 0.8137 | 281,202 |
+| TextCNN+static | 60 | 0.9015 | 0.8113 | 281,202 |
+| TextCNN+nonstatic | 130 | 0.8839 | 0.8142 | 281,202 |
+| TextCNN+multichannel | 60 | 0.9225 | 0.8141 | 561,202 |
 
 Choosing to use word vectors in a nonstatic way. 
 
@@ -83,15 +83,15 @@ Uniform blending...
 Using Logistic Regression as the level-2 classifier...
 
 ## Performance
-Model | Epoch | Training Accuracy | Testing Accuracy | Parameters(word vectors excluded)
-- | :-: | :-: |  :-: | -:
-LR+static_avg | - | 0.77364 | 0.773605 | - 
-NB+static_avg | - | 0.606435 | 0.61082 | -
-TextCNN+nonstatic | 130 | 0.8703 | 0.817615 | 281,202
-TextRNN+nonstatic | 150 | 0.8384 | 0.81969 | 285,826
-CRNN+nonstatic | 70 | 0.8589 | 0.82449 | 274,818
-RCNN+nonstatic | 50 | 0.8497 | 0.822935 | 318,978
-HAN+nonstatic | 110 | 0.8330 | 0.820235 | 209,410
-bagging | - | 0.8538 | 0.82999 | -
-stacking | - | | | -
+| Model | Epoch | Training Accuracy | Testing Accuracy | Parameters(word vectors excluded) |
+| :-: | :-: | :-: |  :-: | :-: |
+| LR+static_avg | - | 0.77364 | 0.773605 | - |
+| NB+static_avg | - | 0.606435 | 0.61082 | - |
+| TextCNN+nonstatic | 130 | 0.8703 | 0.817615 | 281,202 |
+| TextRNN+nonstatic | 150 | 0.8384 | 0.81969 | 285,826 |
+| CRNN+nonstatic | 70 | 0.8589 | 0.82449 | 274,818 |
+| RCNN+nonstatic | 50 | 0.8497 | 0.822935 | 318,978 |
+| HAN+nonstatic | 110 | 0.8330 | 0.820235 | 209,410 |
+| bagging | - | 0.8538 | 0.82999 | - |
+| stacking | - | - | - | - |
 
