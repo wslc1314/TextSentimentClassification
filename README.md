@@ -1,6 +1,6 @@
 # TextSentimentClassification
 TextSentimentClassification, using tensorflow.
-[Original Data Achieving](https://www.kaggle.com/c/ml-2017fall-hw4/data)
+[Original Data](https://www.kaggle.com/c/ml-2017fall-hw4/data)
 
 # Data Preprocessing
 Remove the letter whose number of repetitions is over 3 from a word...
@@ -12,13 +12,13 @@ Using word2vec and GloVe to generate word vectors...
 
 # Models
 ## Performance
-Model | Epoch | Training Accuracy | Validation Accuracy | Parameters(word vectors excluded)
-- | :-: | :-: |  :-: | -:
-TextCNN+nonstatic | 130 | 0.8839 | 0.8142 | 281,202
-TextRNN+nonstatic | 150 | 0.8383 | 0.8199 | 285,826
-CRNN+nonstatic | 70 | 0.8600 | 0.8219 | 274,818
-RCNN+nonstatic | 50 | 0.8553 | 0.8227 | 318,978
-HAN+nonstatic | 110 | 0.8355 | 0.8188 | 209,410
+| Model | Epoch | Training Accuracy | Validation Accuracy | Parameters(word vectors excluded) |
+| - | :-: | :-: |  :-: | -: |
+| TextCNN+nonstatic | 130 | 0.8839 | 0.8142 | 281,202 |
+| TextRNN+nonstatic | 150 | 0.8383 | 0.8199 | 285,826 |
+| CRNN+nonstatic | 70 | 0.8600 | 0.8219 | 274,818 |
+| RCNN+nonstatic | 50 | 0.8553 | 0.8227 | 318,978 |
+| HAN+nonstatic | 110 | 0.8355 | 0.8188 | 209,410 |
 
 ## TextCNN
 ### Reference
