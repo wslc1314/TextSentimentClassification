@@ -7,14 +7,14 @@ from models.TextRNN import model as TextRNN
 from models.CRNN import model as CRNN
 from models.RCNN import model as RCNN
 from models.HAN import model as HAN
-from utils import ensure_dir_exist,WriteToSubmission
+from utils import ensure_dir_exist,WriteToSubmission,my_logger
 from data_helpers.utils import getNonstaticWordDict,create_visual_metadata,readNewFile
 import numpy as np, pandas as pd
 import os
 
 
 def createCrossValidationData(num_cv=5):
-    trainingFile=general_config.data_dir+"/training_label_new.txt"
+    trainingFile=general_config.training_file
     with open(trainingFile,'r') as f:
         raw_data=np.asarray(f.readlines())
     saveDir=ensure_dir_exist(general_config.data_dir+"/cv/"+str(num_cv))
@@ -67,6 +67,7 @@ class model(object):
         self.saveDir = ensure_dir_exist(general_config.save_dir + "/stacking/"
                                         + "-".join(self.models_name)+"/"+str(self.num_cv))
         self.classifier=LogisticRegression()
+        self.logger=my_logger(self.logDir+"/log.txt")
 
     # level-l train
     def train_1(self):
@@ -80,8 +81,9 @@ class model(object):
                 save_dir=save_dir_tmp+"/"+str(i)
                 trainFile = self.dataDir + "/train" + str(i) + ".txt"
                 if not os.path.exists(save_dir):
-                    model.train(trainFile=trainFile,with_validation=True,
-                                log_dir=log_dir,save_dir=save_dir)
+                    model.fit(trainFile=trainFile,with_validation=True,
+                              log_dir=log_dir,save_dir=save_dir,
+                              num_visual=0)
 
     # level-2 train
     def train_2(self):
@@ -120,19 +122,72 @@ class model(object):
             except:
                 predicted_train=tmp["label"].values.reshape((-1,1))
         assert predicted_train.shape[1]==self.num_models
-        id,_,label=readNewFile(file=general_config.data_dir+"/training_label_new.txt")
+        id,_,label=readNewFile(file=general_config.training_file)
         assert np.allclose(np.array(id),np.array(id_train)),"Inconsistent indices!"
         parameters = {'C': [0.001,0.01,0.1,1,10,100]}# Inverse of regularization strength;
         # must be a positive float.
         # Like in support vector machines, smaller values specify stronger regularization.
         self.classifier = GridSearchCV(self.classifier, parameters,cv=self.num_cv,refit=True)
         self.classifier.fit(predicted_train,np.array(label))
-        print(self.classifier.get_params())
+        self.logger.info(self.classifier.cv_results_)
+        self.logger.info(self.classifier.get_params())
         save_path=self.saveDir+"/lr.pkl"
         joblib.dump(self.classifier, save_path)
 
+    def evaluate(self,validFile=None):
+        if validFile is None:
+            trainFile=general_config.training_file
+        else:
+            trainFile=validFile
+        predicted_train = None
+        id_train = None
+        for i in range(self.num_models):
+            model = self.models[i]
+            model_name = self.models_name[i]
+            save_dir_tmp = self.saveDir + "/" + model_name
+            res_ = None
+            for i in range(self.num_cv):
+                save_dir = save_dir_tmp + "/" + str(i)
+                if model_name == "TextCNN":
+                    save_dir += "/nonstatic"
+                save_dir += "/train_valid"
+                vocab2intPath = (self.dataDir + "/train" + str(i) + ".txt").replace(".txt", "_v2i.json")
+                resPath = save_dir + "/train_predicted.csv"
+                if os.path.exists(resPath):
+                    res_ = {}
+                    res_tmp = pd.read_csv(filepath_or_buffer=resPath)
+                    for id, label in zip(res_tmp["id"].values, res_tmp["label"].values):
+                        res_[id] = label
+                else:
+                    res_ = model.predict(testFile=trainFile, vocab2intPath=vocab2intPath,
+                                      load_path=save_dir, resPath=resPath)
+                    res_ = [[key, value] for (key, value) in res_.items()]
+                    tmp = pd.DataFrame(res_, columns=["id", "label"])
+                    tmp = tmp.sort_values(by="id", axis=0, ascending=True)
+                    if i == 0:
+                        id_train = tmp["id"].values
+                    else:
+                        assert np.allclose(id_train, tmp["id"].values)
+                    try:
+                        res_ += tmp["label"].values
+                    except:
+                        res_ = tmp["label"].values
+            res_ = res_ / self.num_cv
+            try:
+                predicted_train = np.concatenate([predicted_train, res_.reshape((-1, 1))], axis=-1)
+            except:
+                predicted_train = res_.reshape((-1, 1))
+        assert predicted_train.shape[1] == self.num_models
+        predicted_ = self.classifier.predict(predicted_train)
+        _, _, label = readNewFile(trainFile)
+        train_accuracy = np.mean(np.equal(np.array(label).reshape((-1,))
+                                          , np.array(predicted_).reshape((-1,))), axis=0)
+        self.logger.info("Accuracy: %s" % train_accuracy)
+        return train_accuracy
 
-    def test(self):
+    def predict(self,testFile=None):
+        if testFile is None:
+            testFile=general_config.testing_file
         predicted_test = None
         id_test=None
         for i in range(self.num_models):
@@ -145,7 +200,6 @@ class model(object):
                 if model_name=="TextCNN":
                     save_dir+="/nonstatic"
                 save_dir+="/train_valid"
-                testFile = general_config.data_dir+"/testing_data_new.txt"
                 vocab2intPath =(self.dataDir + "/train" + str(i) + ".txt").replace(".txt", "_v2i.json")
                 resPath=save_dir+"/test_predicted.csv"
                 if os.path.exists(resPath):

@@ -3,15 +3,29 @@ import numpy as np
 import os
 from configs import general_config
 from data_helpers.utils import readNewFile,loadDict
+import logging
+import tensorflow as tf
+
+def get_num_params():
+    # for v in tf.trainable_variables():
+    #     print(v.name)
+    #     print(np.prod(v.get_shape().as_list()))
+    return np.sum([np.prod(v.get_shape().as_list()) for v in tf.trainable_variables()
+                   if "embedding_matrix" not in v.name.split(":")[0].split("/")
+                   and "embedding_matrix_" not in v.name.split(":")[0].split("/")])
 
 
 class PaddedDataIterator(object):
 
-    def __init__(self, loadPath,vocab2intPath):
+    def __init__(self, loadPath,vocab2intPath,sent_len_cut=None):
         indices, sentences, labels = readNewFile(file=loadPath, vocab2intPath=vocab2intPath)
-        num_words=[len(sentence) for sentence in sentences]
+        num_words = [len(sentence) for sentence in sentences]
+        if isinstance(sent_len_cut, int):
+            num_words_=[min(len(sentence),sent_len_cut) for sentence in sentences]
+        else:
+            num_words_=num_words[:]
         self.df = pd.DataFrame({"id": indices, "sentence": sentences, "label": labels,
-                           "sentence_length": num_words})
+                           "sentence_length": num_words,"sentence_length_":num_words_})
         self.total_size=len(self.df)
         self.cursor=0
         self.loop=0
@@ -40,7 +54,7 @@ class PaddedDataIterator(object):
             # 少的pad，多的cut。
             tmp_len=min(self.max_len,res["sentence_length"].values[idx])
             res_r[:tmp_len]=res["sentence"].values[idx][:tmp_len]
-        return res["id"].values,res_,res["label"].values,res["sentence_length"].values
+        return res["id"].values,res_,res["label"].values,res["sentence_length_"].values
 
 
 class BucketedDataIterator(object):
@@ -151,9 +165,9 @@ class BucketedDataIteratorForDoc(object):
             num_words_=[len(_) for _ in doc]
             num_words.append(num_words_)
             num_words_flat.extend(num_words_)
-        print(max(num_sentences))
-        print(max(num_words_flat))
-        print(num_words[:5])
+        # print(max(num_sentences))
+        # print(max(num_words_flat))
+        # print(num_words[:5])
         self.df = pd.DataFrame({"id": indices, "doc":docs, "label": labels,
                            "doc_length": num_sentences,"sentence_length":num_words})
         df=self.df.sort_values("doc_length").reset_index(drop=True)
@@ -212,3 +226,21 @@ class BucketedDataIteratorForDoc(object):
         # print(res_.shape)
         # print(res_sen_len.shape)
         return res["id"].values,res_,res["label"].values,res["doc_length"].values,res_sen_len
+
+
+def my_logger(logging_path):
+    # 生成日志
+    logger = logging.getLogger(__name__)
+    logger.setLevel(level=logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    logger.handlers = []
+    assert len(logger.handlers) == 0
+    handler = logging.FileHandler(logging_path)
+    handler.setLevel(logging.INFO)
+    handler.setFormatter(formatter)
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    # console.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.addHandler(console)
+    return logger
