@@ -108,7 +108,7 @@ class model(object):
                     for id,label in zip(res_tmp["id"].values,res_tmp["label"].values):
                         res_[id]=label
                 else:
-                    res_=model.test(testFile=testFile,vocab2intPath=vocab2intPath,
+                    res_=model.predict(testFile=testFile,vocab2intPath=vocab2intPath,
                                 load_path=save_dir,
                                 resPath=resPath)
                 res.update(res_)
@@ -145,7 +145,7 @@ class model(object):
             model = self.models[i]
             model_name = self.models_name[i]
             save_dir_tmp = self.saveDir + "/" + model_name
-            res_ = None
+            res = None
             for i in range(self.num_cv):
                 save_dir = save_dir_tmp + "/" + str(i)
                 if model_name == "TextCNN":
@@ -161,27 +161,28 @@ class model(object):
                 else:
                     res_ = model.predict(testFile=trainFile, vocab2intPath=vocab2intPath,
                                       load_path=save_dir, resPath=resPath)
-                    res_ = [[key, value] for (key, value) in res_.items()]
-                    tmp = pd.DataFrame(res_, columns=["id", "label"])
-                    tmp = tmp.sort_values(by="id", axis=0, ascending=True)
-                    if i == 0:
-                        id_train = tmp["id"].values
-                    else:
-                        assert np.allclose(id_train, tmp["id"].values)
-                    try:
-                        res_ += tmp["label"].values
-                    except:
-                        res_ = tmp["label"].values
-            res_ = res_ / self.num_cv
+                res_ = [[key, value] for (key, value) in res_.items()]
+                res_ = pd.DataFrame(res_, columns=["id", "label"])
+                res_ = res_.sort_values(by="id", axis=0, ascending=True)
+                if i == 0:
+                    id_train = res_["id"].values
+                else:
+                    assert np.allclose(id_train, res_["id"].values)
+                try:
+                    res+= res_["label"].values
+                except:
+                    res= res_["label"].values
+            res = res / self.num_cv
             try:
-                predicted_train = np.concatenate([predicted_train, res_.reshape((-1, 1))], axis=-1)
+                predicted_train = np.concatenate([predicted_train, res.reshape((-1, 1))], axis=-1)
             except:
-                predicted_train = res_.reshape((-1, 1))
+                predicted_train = res.reshape((-1, 1))
         assert predicted_train.shape[1] == self.num_models
+        id, _, label = readNewFile(trainFile)
+        assert np.allclose(np.array(id), np.array(id_train)), "Inconsistent indices!"
+        self.classifier = joblib.load(self.saveDir + "/lr.pkl")
         predicted_ = self.classifier.predict(predicted_train)
-        _, _, label = readNewFile(trainFile)
-        train_accuracy = np.mean(np.equal(np.array(label).reshape((-1,))
-                                          , np.array(predicted_).reshape((-1,))), axis=0)
+        train_accuracy = np.mean(np.equal(np.array(label).reshape((-1,)), np.array(predicted_).reshape((-1,))))
         self.logger.info("Accuracy: %s" % train_accuracy)
         return train_accuracy
 
@@ -208,7 +209,7 @@ class model(object):
                     for id,label in zip(res_tmp["id"].values,res_tmp["label"].values):
                         res_[id]=label
                 else:
-                    res_ = model.test(testFile=testFile, vocab2intPath=vocab2intPath,
+                    res_ = model.predict(testFile=testFile, vocab2intPath=vocab2intPath,
                                       load_path=save_dir,
                                       resPath=resPath)
                 res_ = [[key, value] for (key, value) in res_.items()]

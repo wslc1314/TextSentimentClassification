@@ -87,10 +87,10 @@ def main():
     # model.predict()
 
     model=stacking()
-    model.train_1()
-    model.train_2()
-    # model.evaluate()
-    # model.predict()
+    # model.train_1()
+    # model.train_2()
+    model.evaluate()
+    model.predict()
 
 
 

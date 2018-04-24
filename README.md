@@ -26,7 +26,7 @@ Using word2vec and GloVe to generate word vectors...
 
 [A Sensitivity Analysis of (and Practitioners' Guide to) Convolutional Neural Networks for Sentence Classification](https://arxiv.org/abs/1510.03820)
 ### Model Architecture
-![](https://github.com/wslc1314/TextSentimentClassification/blob/master/images/TextCNN.png "TextCNN")
+![](https://github.com/wslc1314/TextSentimentClassification/blob/master/models/Images/TextCNN.png "TextCNN")
 *Total 4 ways:*
 + CNN-rand
 + CNN-static
@@ -44,7 +44,7 @@ Choosing to use word vectors in a nonstatic way.
 
 ## TextRNN
 ### Model Architecture
-![](https://github.com/wslc1314/TextSentimentClassification/blob/master/images/TextRNN.JPG "TextRNN")
+![](https://github.com/wslc1314/TextSentimentClassification/blob/master/models/Images/TextRNN.JPG "TextRNN")
 
 Using bidirectional RNN, and then concatenating the output of the forward process and the output of the backward process...
 
@@ -52,7 +52,7 @@ Using bidirectional RNN, and then concatenating the output of the forward proces
 ### Reference
 [A C-LSTM Neural Network for Text Classification](https://arxiv.org/abs/1511.08630)
 ### Model Architecture
-![](https://github.com/wslc1314/TextSentimentClassification/blob/master/images/CRNN.png "CRNN")
+![](https://github.com/wslc1314/TextSentimentClassification/blob/master/models/Images/CRNN.png "CRNN")
 
 Using CNN to extract sentences with higher-level phrase representations, and then learning long short-term dependency with bi-RNN...
 
@@ -61,7 +61,7 @@ Using CNN to extract sentences with higher-level phrase representations, and the
 [Recurrent Convolutional Neural Networks for Text Classification](https://aaai.org/ocs/index.php/AAAI/AAAI15/paper/view/9745)
 
 ### Model Architecture
-![](https://github.com/wslc1314/TextSentimentClassification/blob/master/images/RCNN.png "RCNN")
+![](https://github.com/wslc1314/TextSentimentClassification/blob/master/models/Images/RCNN.png "RCNN")
 
 In addition to implementing the same structure as the paper, using bi-LSTM or bi-GRU and then concatenating their outputs...
 RNN for capturing contextual information and max pooling used for judging which words play key roles in the task...
@@ -71,7 +71,7 @@ RNN for capturing contextual information and max pooling used for judging which 
 [Hierarchical Attention Networks for Document Classification](https://www.microsoft.com/en-us/research/publication/hierarchical-attention-networks-document-classification/)
 
 ### Model Architecture
-![](https://github.com/wslc1314/TextSentimentClassification/blob/master/images/HAN.png "HAN")
+![](https://github.com/wslc1314/TextSentimentClassification/blob/master/models/Images/HAN.png "HAN")
 
 Transforming a sentence into a document consisting of sentences...
 
@@ -93,5 +93,5 @@ Using Logistic Regression as the level-2 classifier...
 | RCNN+nonstatic | 50 | 0.8497 | 0.822935 | 318,978 |
 | HAN+nonstatic | 110 | 0.8330 | 0.820235 | 209,410 |
 | bagging | - | 0.8538 | 0.82999 | - |
-| stacking | - | - | - | - |
+| stacking | - | 0.867135 | 0.831045 | - |
 
